@@ -9,18 +9,17 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 
 
-private const val ARG_COLOUR = "colour1"
+private const val ARG_COLOUR = "colour"
 
 
 class Fragment2 : Fragment() {
-    //private var colour: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            colour = it.getInt(ARG_COLOUR)
-//
-//        }
+        arguments?.let {
+            //val colour = it.getInt(ARG_COLOUR)
+            //changeColourOfBackground(colour)
+        }
     }
 
     override fun onCreateView(
@@ -36,20 +35,11 @@ class Fragment2 : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Fragment2.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             Fragment2().apply {
                 arguments = Bundle().apply {
-
+                    //putInt(ARG_COLOUR, colour)
                 }
             }
     }
