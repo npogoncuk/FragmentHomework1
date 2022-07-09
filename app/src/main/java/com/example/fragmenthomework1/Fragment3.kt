@@ -6,20 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val ARG_COLOUR = "colour"
 
 class Fragment3 : Fragment() {
+    var colour: Int = -1
+    private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            //param1 = it.getString(ARG_PARAM1)
-           // param2 = it.getString(ARG_PARAM2)
+            colour = it.getInt(ARG_COLOUR)
         }
+        if (arguments == null) colour = getColourInt(R.color.yellow, requireContext())
     }
 
     override fun onCreateView(
@@ -32,11 +32,10 @@ class Fragment3 : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(colour: Int) =
             Fragment3().apply {
                 arguments = Bundle().apply {
-                    //putString(ARG_PARAM1, param1)
-                    //putString(ARG_PARAM2, param2)
+                    putInt(ARG_COLOUR, colour)
                 }
             }
     }

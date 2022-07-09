@@ -1,25 +1,26 @@
 package com.example.fragmenthomework1
 
-import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 
 
 private const val ARG_COLOUR = "colour"
 
 
 class Fragment2 : Fragment() {
-
+    var colour: Int = -1
+    private set
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            //val colour = it.getInt(ARG_COLOUR)
-            //changeColourOfBackground(colour)
+            colour = it.getInt(ARG_COLOUR)
         }
+        if (arguments == null) colour = getColourInt(R.color.blue, requireContext())
     }
 
     override fun onCreateView(
@@ -36,10 +37,10 @@ class Fragment2 : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(colour: Int) =
             Fragment2().apply {
                 arguments = Bundle().apply {
-                    //putInt(ARG_COLOUR, colour)
+                    putInt(ARG_COLOUR, colour)
                 }
             }
     }

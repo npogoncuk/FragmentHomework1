@@ -11,10 +11,12 @@ import android.widget.Button
 class Fragment1 : Fragment() {
 
     private lateinit var onColourChangeListener: OnColourChangeListener
+    private lateinit var onReplaceListener: OnReplaceListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        onColourChangeListener = (context as? OnColourChangeListener) ?: throw AssertionError("Activity should implement interface")
+        onColourChangeListener = (context as? OnColourChangeListener) ?: throw AssertionError("Activity should implement OnColourChangeListener")
+        onReplaceListener = (context as? OnReplaceListener) ?: throw AssertionError("Activity should implement OnReplaceListener")
     }
 
     override fun onCreateView(
@@ -23,13 +25,16 @@ class Fragment1 : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_1, container, false)
-        view.findViewById<Button>(R.id.buttonChangeColour).setOnClickListener {
-            onColourChangeListener.onColourChangeClicked()
-        }
+        view.findViewById<Button>(R.id.buttonChangeColour).setOnClickListener { onColourChangeListener.onColourChangeClicked() }
+        view.findViewById<Button>(R.id.buttonReplaceFragment).setOnClickListener { onReplaceListener.onReplaceClicked() }
         return view
     }
 
     interface OnColourChangeListener {
         fun onColourChangeClicked()
+    }
+
+    interface OnReplaceListener {
+        fun onReplaceClicked()
     }
 }
