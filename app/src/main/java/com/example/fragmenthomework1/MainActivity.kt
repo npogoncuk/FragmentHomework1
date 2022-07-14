@@ -1,95 +1,64 @@
 package com.example.fragmenthomework1
 
 import android.os.Bundle
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 
-private const val KEY_IS_COLOUR_CHANGED = "isColourChanged"
-private const val KEY_IS_FRAGMENTS_REPLACED = "isFragmentsReplaced"
-
-class MainActivity : AppCompatActivity(), Fragment1.OnColourChangeListener, Fragment1.OnReplaceListener {
+class MainActivity : AppCompatActivity(), Fragment1.OnColourChangeListener,
+    Fragment1.OnReplaceListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragment1_container, Fragment1())
-            .commit()
-
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragment2_container, Fragment2.newInstance(ContextCompat.getColor(this, R.color.blue)))
-            .commit()
-
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragment3_container, Fragment3.newInstance(ContextCompat.getColor(this, R.color.yellow)))
-            .commit()
+        if (savedInstanceState == null) {
+            addFragmentTo(Fragment1(), R.id.fragment1_container)
+            addFragmentTo(
+                Fragment2.newInstance(getColourInt(R.color.blue, this)),
+                R.id.fragment2_container
+            )
+            addFragmentTo(
+                Fragment3.newInstance(getColourInt(R.color.yellow, this)),
+                R.id.fragment3_container
+            )
+        }
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (isColourChanged) {
-            isColourChanged = !isColourChanged
-            onColourChangeClicked()
-        }
-        if (isFragmentsReplaced) {
-            onReplaceClicked()
-        }
+    private fun addFragmentTo(fragment: Fragment, @IdRes container: Int) {
+        supportFragmentManager
+            .beginTransaction()
+            .setReorderingAllowed(true)
+            .add(container, fragment)
+            .commit()
     }
 
-    private var isColourChanged = false
+
     override fun onColourChangeClicked() {
-        if (!isFragmentsReplaced) {
-            (supportFragmentManager.findFragmentById(R.id.fragment2_container) as Fragment2)
-                .changeColourOfBackground(getColourInt( if (!isColourChanged) R.color.red else R.color.blue, this))
-            (supportFragmentManager.findFragmentById(R.id.fragment3_container) as Fragment3)
-                .changeColourOfBackground(getColourInt(if (!isColourChanged) R.color.black else R.color.yellow, this))
-        } else {
-            (supportFragmentManager.findFragmentById(R.id.fragment2_container) as Fragment3)
-                .changeColourOfBackground(getColourInt( if (!isColourChanged) R.color.red else R.color.blue, this))
-            (supportFragmentManager.findFragmentById(R.id.fragment3_container) as Fragment2)
-                .changeColourOfBackground(getColourInt(if (!isColourChanged) R.color.black else R.color.yellow, this))
-        }
-        isColourChanged = !isColourChanged
+        (supportFragmentManager.findFragmentById(R.id.fragment2_container) as BackgroundChangeable).changeColourOfBackground()
+        (supportFragmentManager.findFragmentById(R.id.fragment3_container) as BackgroundChangeable).changeColourOfBackground()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(KEY_IS_COLOUR_CHANGED, isColourChanged)
-        outState.putBoolean(KEY_IS_FRAGMENTS_REPLACED, isFragmentsReplaced)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        isColourChanged = savedInstanceState.getBoolean(KEY_IS_COLOUR_CHANGED)
-        isFragmentsReplaced = savedInstanceState.getBoolean(KEY_IS_FRAGMENTS_REPLACED)
-    }
-
-    private var isFragmentsReplaced = false
     override fun onReplaceClicked() {
-        val fragmentCenter =
-            if (!isFragmentsReplaced)
-                Fragment3.newInstance(if (isColourChanged) getColourInt(R.color.black, this) else getColourInt(R.color.yellow, this))
-            else Fragment2.newInstance(if (isColourChanged) getColourInt(R.color.red, this) else getColourInt(R.color.blue, this))
-        val fragmentBottom =
-            if (isFragmentsReplaced)
-                Fragment3.newInstance(if (isColourChanged) getColourInt(R.color.black, this) else getColourInt(R.color.yellow, this))
-            else Fragment2.newInstance(if (isColourChanged) getColourInt(R.color.red, this) else getColourInt(R.color.blue, this))
-
+        val oldCenterFragment = supportFragmentManager.findFragmentById(R.id.fragment2_container)!!
+        val oldBottomFragment = supportFragmentManager.findFragmentById(R.id.fragment3_container)!!
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment2_container, fragmentBottom)
+            .remove(oldCenterFragment)
+            .add(R.id.fragment2_container, recreateFragment(oldBottomFragment))
             .commit()
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment3_container, fragmentCenter)
+            .remove(oldBottomFragment)
+            .add(R.id.fragment3_container, recreateFragment(oldCenterFragment))
             .commit()
+    }
 
-        isFragmentsReplaced = !isFragmentsReplaced
+    private fun recreateFragment(f: Fragment): Fragment {
+        val savedState: Fragment.SavedState = supportFragmentManager.saveFragmentInstanceState(f)!!
+        val newInstance = f.javaClass.newInstance()
+        newInstance.setInitialSavedState(savedState)
+        return newInstance
     }
 }

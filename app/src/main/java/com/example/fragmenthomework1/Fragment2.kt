@@ -5,33 +5,41 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 
 private const val ARG_COLOUR = "colour"
 
 
-class Fragment2 : Fragment() {
-    var colour: Int = -1
-    private set
+class Fragment2 : Fragment(), BackgroundChangeable {
+    private var colour: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
+        savedInstanceState?.let {
             colour = it.getInt(ARG_COLOUR)
         }
-        if (arguments == null) colour = getColourInt(R.color.blue, requireContext())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_2, container, false)
     }
 
-    fun changeColourOfBackground(colour: Int) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState == null) colour = getColourInt(R.color.blue, requireContext())
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setColourOfBackground(colour)
+    }
+
+    private fun setColourOfBackground(colour: Int) {
         requireView().findViewById<FrameLayout>(R.id.fragment2).setBackgroundColor(colour)
     }
 
@@ -43,6 +51,19 @@ class Fragment2 : Fragment() {
                     putInt(ARG_COLOUR, colour)
                 }
             }
+
+    }
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ARG_COLOUR, colour)
+    }
+
+    override fun changeColourOfBackground() {
+        colour = if (colour == getColourInt(R.color.blue, requireContext())) getColourInt(R.color.red, requireContext())
+        else getColourInt(R.color.blue, requireContext())
+        setColourOfBackground(colour)
     }
 
 

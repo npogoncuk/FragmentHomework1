@@ -23,7 +23,6 @@ class Fragment1 : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_1, container, false)
         view.findViewById<Button>(R.id.buttonChangeColour).setOnClickListener { onColourChangeListener.onColourChangeClicked() }
         view.findViewById<Button>(R.id.buttonReplaceFragment).setOnClickListener { onReplaceListener.onReplaceClicked() }

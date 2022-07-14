@@ -8,20 +8,20 @@
     android:paddingRight="16dp"
     tools:context=".MainActivity">
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment1_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.33" />
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment2_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.33"
         tools:background="@android:color/holo_blue_light" />
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment3_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
